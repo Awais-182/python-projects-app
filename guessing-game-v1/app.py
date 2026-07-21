@@ -1,6 +1,12 @@
+# ==============================================================================
+# Live App URL: https://python-projects-app-522mr7fymyhcwf4bm2hjbg.streamlit.app/
+# Repository:   python-projects-apps/guessing-game-v1
+# ==============================================================================
+
 import streamlit as st
 import random
 
+# (the rest of your game code below)
 # App Title & Description
 st.title("🎯 Number Guessing Game (v1.0)")
 st.write("Welcome! I have picked a secret number between **1 and 100**. Can you guess what it is?")
