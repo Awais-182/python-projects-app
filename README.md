@@ -10,7 +10,7 @@ Each project is self-contained in its own folder with source code, dependencies,
 
 | Project Name | Description | Tech Used | Status |
 | :--- | :--- | :--- | :---: |
-| 🎯 **[Guess the Number](./guessing-game)** | A fun, interactive number guessing game with live attempts tracking and session state memory. | Python, Streamlit | [**Live App**](https://your-streamlit-app-link.streamlit.app) |
+| 🎯 **[Guess the Number](./guessing-game-v1)** | A fun, interactive number guessing game with live attempts tracking and session state memory. | Python, Streamlit | [**Live App**](https://python-projects-app-522mr7fymyhcwf4bm2hjbg.streamlit.app/) |
 | 🧮 **Calculator** *(Coming Soon)* | A custom utility app for quick mathematical operations. | Python, Streamlit | 🚧 *In Progress* |
 | 🔑 **Password Generator** *(Coming Soon)* | A tool to generate strong, customizable passwords. | Python, Streamlit | 🚧 *In Progress* |
 
@@ -19,9 +19,9 @@ Each project is self-contained in its own folder with source code, dependencies,
 ## 📂 Repository Structure
 
 ```text
-python-web-apps/
+python-projects-apps/
 ├── README.md
-├── guessing-game/
+├── guessing-game-v1/
 │   ├── app.py
 │   └── requirements.txt
 └── future-app-name/
