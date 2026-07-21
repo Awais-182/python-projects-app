@@ -1,8 +1,3 @@
-# ==============================================================================
-# Live App URL: https://python-projects-app-522mr7fymyhcwf4bm2hjbg.streamlit.app/
-# Repository:   python-projects-apps/guessing-game-v1
-# ==============================================================================
-
 import streamlit as st
 import random
 
