@@ -33,7 +33,7 @@ An interactive, web-based Number Guessing Game built with Python and Streamlit. 
 
 - **Single Session Memory:** Refreshing or closing the browser tab resets the current game state and target number.
 - **Single-Player Only:** Designed for individual users; does not support multi-player leaderboards or global high scores.
-- **Fixed Range:** The target random number range is fixed (e.g., 1 to 100) unless adjusted in the source code.
+- **Fixed Range:** The target random number range is fixed unless adjusted in the source code.
 
 ---
 
@@ -52,14 +52,16 @@ To clone and run this project locally on your machine:
 1. **Clone the repository:**
    ```bash
    git clone [https://github.com/Awais-182/python-projects-apps.git](https://github.com/Awais-182/python-projects-apps.git)
-   cd python-projects-apps/guessing-game-v1
-   Install dependencies: pip install streamlit
+   cd python-projects-apps/guessing-game-v2
+ pip install -r requirements.txt
    Run the application: streamlit run app.py
 
    ---
 
    ## 📁 Project Structure
 
-   guessing-game-v1/
-├── app.py        # Main Streamlit web application script
-└── README.md     # Project documentation, credits & live link
+   guessing-game-v2/
+├── app.py          # Main Streamlit web application script
+├── requirements.txt # Project dependencies (streamlit)
+├── .gitignore       # Excludes cache files (__pycache__, .streamlit, etc.)
+└── README.md        # Documentation, feature overview & credits
