@@ -1,13 +1,13 @@
 import streamlit as st
 
-# 1. Page Configuration (Title, Icon, Dark Mode Layout)
+# 1. Page Configuration
 st.set_page_config(
     page_title="Chronos: Time Converter",
     page_icon="⏳",
     layout="centered"
 )
 
-# Custom Styling to give it an immersive dark/cyberpunk look
+# Custom Styling for Cyberpunk/Dark UI
 st.markdown("""
     <style>
     .main {
@@ -40,7 +40,7 @@ st.caption("v6.5 — Pure Python `divmod()` Time Conversion & Visualizer")
 
 st.divider()
 
-# 2. Mathematical Disclaimer / Warning Notice
+# 2. Disclaimer Notice
 st.warning(
     "⚠️ **Calculation Logic Notice:** This system calculates time using a standardized "
     "**30-day average per month** and a **365-day year model** to maintain mathematical consistency "
@@ -58,7 +58,7 @@ total_seconds = st.number_input(
     help="Type any positive integer of seconds."
 )
 
-# 4. Core Logic
+# 4. Core divmod() Hierarchical Logic
 minutes, seconds = divmod(total_seconds, 60)
 hours, minutes = divmod(minutes, 60)
 days, hours = divmod(hours, 24)
@@ -68,10 +68,11 @@ years, months = divmod(months, 12)
 
 st.write("")
 
+# 5. Conditional Rendering
 if total_seconds > 0:
     st.subheader("📊 Breakdown Cards")
     
-    # 5. Visual Breakdown using Styled Metric Cards
+    # Styled Metric Cards Layout
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.markdown(f'<div class="metric-card"><div class="metric-value">{years}</div><div class="metric-label">Years</div></div>', unsafe_allow_html=True)
@@ -93,7 +94,7 @@ if total_seconds > 0:
 
     st.divider()
 
-    # 6. Advanced Visualizations
+    # Advanced Visualizations
     st.subheader("🌐 Visual Analytics")
 
     # Visualization A: Human Lifespan Comparison
@@ -114,7 +115,7 @@ if total_seconds > 0:
 
     st.write("")
 
-    # Visualization C: Relative Scale Matrix
+    # Visualization C: Component Breakdown Chart
     st.write("##### 📈 Component Distribution Matrix")
     st.caption("Visualizing the relative weight of each time unit extracted from your input:")
     
@@ -128,10 +129,6 @@ if total_seconds > 0:
         "Seconds": seconds
     }
     
-    st.bar_chart(time_data)
-
-else:
-    st.info("Enter a value greater than 0 to view the time manipulation breakdown.")
     st.bar_chart(time_data)
 
 else:
