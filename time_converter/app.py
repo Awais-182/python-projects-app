@@ -2,7 +2,7 @@ import streamlit as st
 
 # 1. Page Configuration (Title, Icon, Dark Mode Layout)
 st.set_page_config(
-    page_config_title="Chronos: Time Converter",
+    page_title="Chronos: Time Converter",
     page_icon="⏳",
     layout="centered"
 )
@@ -49,7 +49,7 @@ st.warning(
 
 st.write("")
 
-# 3. Input Section (Replaces CLI input())
+# 3. Input Section
 total_seconds = st.number_input(
     "Enter Total Seconds to Manipulate:",
     min_value=0,
@@ -58,7 +58,7 @@ total_seconds = st.number_input(
     help="Type any positive integer of seconds."
 )
 
-# 4. Core Logic (Your Original divmod Chaining)
+# 4. Core Logic
 minutes, seconds = divmod(total_seconds, 60)
 hours, minutes = divmod(minutes, 60)
 days, hours = divmod(hours, 24)
@@ -96,8 +96,7 @@ if total_seconds > 0:
     # 6. Advanced Visualizations
     st.subheader("🌐 Visual Analytics")
 
-    # Visualization A: Human Lifespan Comparison (Progress Bar)
-    # Average human life ~ 2.5 Billion seconds (~79 years)
+    # Visualization A: Human Lifespan Comparison
     LIFESPAN_SECONDS = 2_500_000_000
     percentage_of_life = min((total_seconds / LIFESPAN_SECONDS), 1.0)
     
@@ -107,8 +106,7 @@ if total_seconds > 0:
 
     st.write("")
 
-    # Visualization B: Month Cycle Progress (Progress Bar)
-    # How close the remaining days are to completing a full 30-day month
+    # Visualization B: Month Cycle Progress
     month_progress = days / 30.0
     st.write("##### 📅 Current Month Progress")
     st.caption(f"The remaining **{days} days** complete **{month_progress * 100:.1f}%** of a 30-day cycle.")
@@ -116,7 +114,7 @@ if total_seconds > 0:
 
     st.write("")
 
-    # Visualization C: Relative Scale Matrix (Bar Chart)
+    # Visualization C: Relative Scale Matrix
     st.write("##### 📈 Component Distribution Matrix")
     st.caption("Visualizing the relative weight of each time unit extracted from your input:")
     
@@ -130,6 +128,10 @@ if total_seconds > 0:
         "Seconds": seconds
     }
     
+    st.bar_chart(time_data)
+
+else:
+    st.info("Enter a value greater than 0 to view the time manipulation breakdown.")
     st.bar_chart(time_data)
 
 else:
