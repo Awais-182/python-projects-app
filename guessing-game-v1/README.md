@@ -49,14 +49,14 @@ An interactive, web-based Number Guessing Game built with Python and Streamlit. 
 
 To clone and run this project locally on your machine:
 
-1. Clone the repository:
+1. **Clone the repository:**
    git clone https://github.com/Awais-182/python-projects-apps.git
    cd python-projects-apps/guessing-game-v1
 
-2. Install dependencies:
+2. **Install dependencies:**
    pip install streamlit
 
-3. Run the application:
+3. **Run the application:**
    streamlit run app.py
 
 ---
@@ -64,5 +64,6 @@ To clone and run this project locally on your machine:
 ## 📁 Project Structure
 
 guessing-game-v1/
-├── app.py          # Main Streamlit web application script
-└── README.md       # Project documentation, credits & live link
+├── app.py
+└── requirements.txt
+└── README.md
