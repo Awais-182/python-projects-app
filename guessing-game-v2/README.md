@@ -52,9 +52,13 @@ To clone and run this project locally on your machine:
 1. **Clone the repository:**
    ```bash
    git clone [https://github.com/Awais-182/python-projects-apps.git](https://github.com/Awais-182/python-projects-apps.git)
+
+2. **Navitagte into the project directory:**
    cd python-projects-apps/guessing-game-v2
- pip install -r requirements.txt
-   Run the application: streamlit run app.py
+3. **Install dependencies:**
+   pip install -r requirements.txt
+4. **Run the application:**
+   streamlit run app.py
 
    ---
 
