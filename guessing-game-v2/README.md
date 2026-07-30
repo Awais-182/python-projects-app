@@ -65,7 +65,7 @@ To clone and run this project locally on your machine:
    ## 📁 Project Structure
 
    guessing-game-v2/
-├── app.py          # Main Streamlit web application script
-├── requirements.txt # Project dependencies (streamlit)
-├── .gitignore       # Excludes cache files (__pycache__, .streamlit, etc.)
-└── README.md        # Documentation, feature overview & credits
+├── app.py
+├── requirements.txt
+├── .gitignore
+└── README.md
