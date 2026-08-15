@@ -1,5 +1,5 @@
 import os
-import re
+import json
 import streamlit as st
 from PIL import Image
 from google import genai
@@ -15,7 +15,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom Styling (Glassmorphism & Vibrant Neon Highlights)
 st.markdown("""
 <style>
     .stApp {
@@ -67,7 +66,6 @@ if "GEMINI_API_KEY" in st.secrets:
 elif "GEMINI_API_KEY" in os.environ:
     api_key = os.environ["GEMINI_API_KEY"]
 
-# Sidebar configuration
 with st.sidebar:
     st.header("⚙️ App Settings")
     if not api_key:
@@ -77,44 +75,26 @@ with st.sidebar:
             help="Add GEMINI_API_KEY to your Streamlit Secrets for permanent access."
         )
     else:
-        st.success("🔒 API Key loaded securely from Secrets.")
+        st.success("🔒 API Key loaded securely.")
 
     st.markdown("---")
     enable_fx = st.checkbox("🎉 Enable Celebration Effects", value=True)
     enable_sound = st.checkbox("🔊 Enable Sound Effects", value=True)
 
 # ----------------------------------------------------
-# 3. Dynamic Radar Chart & Stat Parser
+# 3. Dynamic Radar Chart Function
 # ----------------------------------------------------
-def parse_character_stats(text):
-    """Extracts dynamic 0-100 numerical stats and tier rank from AI response."""
-    stats = {
-        'Power Level': 80,
-        'Aura / Vibe': 85,
-        'Visual Design': 90,
-        'Agility': 75,
-        'Mystery': 70,
-        'Tier': 'S-Rank'
-    }
-    
-    # Regex search for numeric score patterns like 'Power Level: 95'
-    for key in ['Power Level', 'Aura / Vibe', 'Visual Design', 'Agility', 'Mystery']:
-        match = re.search(rf"{key}\s*:\s*(\d+)", text, re.IGNORECASE)
-        if match:
-            stats[key] = min(100, max(10, int(match.group(1))))
-            
-    tier_match = re.search(r"Power Tier\s*:\s*([A-Za-z0-9\-+ ]+)", text, re.IGNORECASE)
-    if tier_match:
-        stats['Tier'] = tier_match.group(1).strip()
-        
-    return stats
-
 def render_radar_chart(stats):
     categories = ['Power Level', 'Aura / Vibe', 'Visual Design', 'Agility', 'Mystery']
-    values = [stats[cat] for cat in categories]
+    values = [
+        stats.get('power_level', 80),
+        stats.get('aura_vibe', 85),
+        stats.get('visual_design', 90),
+        stats.get('agility', 75),
+        stats.get('mystery', 70)
+    ]
 
     fig = go.Figure()
-
     fig.add_trace(go.Scatterpolar(
         r=values,
         theta=categories,
@@ -176,42 +156,35 @@ with col_result:
                     
                     prompt = """
                     You are an expert anime character identifier and lore specialist.
-                    Analyze this anime character image and evaluate their canonical powers, aesthetic, and stats.
-                    Provide the output formatted strictly with the following sections:
-
-                    ### 🎭 Character Identity
-                    * **Character Name:** [Name]
-                    * **Anime / Source:** [Anime Series Name]
-                    * **Character Archetype / Trope:** [e.g., Shonen Hero, Tsundere, Overpowered Mentor, Kuudere, Anti-Hero]
-                    * **Signature Quote / Catchphrase:** "[A classic or generated fitting 1-line quote]"
-
-                    ### ⚡ Powers & Lore
-                    * **Powers & Abilities:** [Detailed breakdown]
-                    * **Primary Role:** [Protagonist / Antagonist / Deuteragonist / Supporting]
-                    * **Short Bio & Backstory:** [2-3 concise, engaging sentences]
-
-                    ### 🎨 Visual & Art Analysis
-                    * **Hair & Eye Style:** [Description]
-                    * **Aesthetic Vibe:** [e.g., Cyberpunk Dark, Shonen Action, Pastel Fantasy]
-                    * **Estimated Anime Lookalikes:** [List 2-3 characters with similar facial designs]
-
-                    ### 📊 Combat & Lore Ratings
-                    Assign realistic ratings from 10 to 100 based on this specific character's lore and design:
-                    * **Power Level:** [Number 10-100]
-                    * **Aura / Vibe:** [Number 10-100]
-                    * **Visual Design:** [Number 10-100]
-                    * **Agility:** [Number 10-100]
-                    * **Mystery:** [Number 10-100]
-                    * **Power Tier:** [e.g., S-Rank / A-Rank / God-Tier / High-Human]
+                    Analyze this anime character and output a strictly valid JSON object matching this schema:
+                    {
+                        "character_name": "string",
+                        "anime_source": "string",
+                        "archetype": "string",
+                        "signature_quote": "string",
+                        "primary_role": "string",
+                        "powers_and_abilities": "string",
+                        "bio_backstory": "string",
+                        "hair_and_eye_style": "string",
+                        "aesthetic_vibe": "string",
+                        "lookalikes": "string",
+                        "power_level": int (10-100),
+                        "aura_vibe": int (10-100),
+                        "visual_design": int (10-100),
+                        "agility": int (10-100),
+                        "mystery": int (10-100),
+                        "power_tier": "string (e.g. S-Rank, Special Grade, High-Human, A-Rank)"
+                    }
+                    Ensure the numeric ratings accurately reflect this specific character's canonical strength and lore.
                     """
 
                     response = client.models.generate_content(
                         model="gemini-3.6-flash",
-                        contents=[image, prompt]
+                        contents=[image, prompt],
+                        config={"response_mime_type": "application/json"}
                     )
                     
-                    raw_text = response.text
-                    stats = parse_character_stats(raw_text)
+                    data = json.loads(response.text)
                     
                     if enable_fx:
                         st.balloons()
@@ -226,26 +199,41 @@ with col_result:
                     tab1, tab2 = st.tabs(["📜 Character Dossier", "📈 Power & Stats"])
                     
                     with tab1:
-                        # Display clean dossier without trailing raw numbers
-                        display_text = raw_text.split("### 📊 Combat & Lore Ratings")[0]
-                        st.markdown(display_text)
+                        st.markdown(f"""
+                        ### 🎭 Character Identity
+                        * **Character Name:** {data.get('character_name', 'Unknown')}
+                        * **Anime / Source:** {data.get('anime_source', 'Unknown')}
+                        * **Archetype / Trope:** {data.get('archetype', 'N/A')}
+                        * **Signature Quote:** *"{data.get('signature_quote', '...')}"*
+
+                        ### ⚡ Powers & Lore
+                        * **Primary Role:** {data.get('primary_role', 'N/A')}
+                        * **Powers & Abilities:** {data.get('powers_and_abilities', 'N/A')}
+                        * **Bio & Backstory:** {data.get('bio_backstory', 'N/A')}
+
+                        ### 🎨 Visual & Art Analysis
+                        * **Hair & Eye Style:** {data.get('hair_and_eye_style', 'N/A')}
+                        * **Aesthetic Vibe:** {data.get('aesthetic_vibe', 'N/A')}
+                        * **Anime Lookalikes:** {data.get('lookalikes', 'N/A')}
+                        """)
                     
                     with tab2:
-                        st.markdown(f"#### ⚡ Power Radar: **{stats.get('Tier', 'S-Rank')}**")
-                        st.plotly_chart(render_radar_chart(stats), use_container_width=True)
+                        tier_label = data.get('power_tier', 'S-Rank')
+                        st.markdown(f"#### ⚡ Power Radar: **{tier_label}**")
+                        st.plotly_chart(render_radar_chart(data), use_container_width=True)
                         
                         col_m1, col_m2 = st.columns(2)
                         with col_m1:
-                            st.metric("Combat Power", f"{stats['Power Level']} / 100")
-                            st.metric("Aura Rating", f"{stats['Aura / Vibe']} / 100")
+                            st.metric("Combat Power", f"{data.get('power_level', 50)} / 100")
+                            st.metric("Aura Rating", f"{data.get('aura_vibe', 50)} / 100")
                         with col_m2:
-                            st.metric("Agility Speed", f"{stats['Agility']} / 100")
-                            st.metric("Design Impact", f"{stats['Visual Design']} / 100")
+                            st.metric("Agility Speed", f"{data.get('agility', 50)} / 100")
+                            st.metric("Design Impact", f"{data.get('visual_design', 50)} / 100")
                             
                         st.markdown(f"""
                         <div class="stat-card">
-                            <strong>🔥 Evaluated Tier:</strong> <span class="trope-chip">{stats['Tier']}</span>
-                            <span class="trope-chip">Mystery: {stats['Mystery']}%</span>
+                            <strong>🔥 Evaluated Tier:</strong> <span class="trope-chip">{tier_label}</span>
+                            <span class="trope-chip">Mystery: {data.get('mystery', 50)}%</span>
                         </div>
                         """, unsafe_allow_html=True)
 
