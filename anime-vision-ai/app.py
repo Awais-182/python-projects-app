@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 # 1. Page & Layout Configuration
 # ----------------------------------------------------
 st.set_page_config(
-    page_title="Anime Face & Character Analyzer",
+    page_title="AnimeVision AI",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -17,13 +17,10 @@ st.set_page_config(
 # Custom Styling (Glassmorphism & Vibrant Neon Highlights)
 st.markdown("""
 <style>
-    /* Global background adjustments */
     .stApp {
         background: radial-gradient(circle at 10% 20%, rgba(20, 24, 40, 0.95), rgba(10, 12, 22, 1));
         color: #F0F4F8;
     }
-    
-    /* Neon Header Title */
     .main-title {
         font-size: 2.4rem;
         font-weight: 800;
@@ -39,8 +36,6 @@ st.markdown("""
         color: #A0AEC0;
         margin-bottom: 1.8rem;
     }
-    
-    /* Card Containers */
     .stat-card {
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.12);
@@ -49,8 +44,6 @@ st.markdown("""
         margin-bottom: 15px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     }
-    
-    /* Trope Badge */
     .trope-chip {
         display: inline-block;
         background: linear-gradient(135deg, #FF3366, #BA27FF);
@@ -67,9 +60,7 @@ st.markdown("""
 # ----------------------------------------------------
 # 2. Secure API Key Management
 # ----------------------------------------------------
-# Check Streamlit Cloud Secrets first, then local environment
 api_key = None
-
 if "GEMINI_API_KEY" in st.secrets:
     api_key = st.secrets["GEMINI_API_KEY"]
 elif "GEMINI_API_KEY" in os.environ:
@@ -78,8 +69,6 @@ elif "GEMINI_API_KEY" in os.environ:
 # Sidebar configuration
 with st.sidebar:
     st.header("⚙️ App Settings")
-    
-    # Allow manual entry only if key is not found in secrets
     if not api_key:
         api_key = st.text_input(
             "Gemini API Key",
@@ -90,13 +79,8 @@ with st.sidebar:
         st.success("🔒 API Key loaded securely from Secrets.")
 
     st.markdown("---")
-    analysis_style = st.selectbox(
-        "Analysis Tone",
-        ["Classic Anime Card", "Detailed Power & Lore", "Art & Style Breakdown"],
-        index=0
-    )
-    
     enable_fx = st.checkbox("🎉 Enable Celebration Effects", value=True)
+    enable_sound = st.checkbox("🔊 Enable Sound Effects", value=True)
 
 # ----------------------------------------------------
 # 3. Radar Chart Helper Function
@@ -129,8 +113,8 @@ def render_radar_chart():
 # ----------------------------------------------------
 # 4. Header UI
 # ----------------------------------------------------
-st.markdown('<div class="main-title">⚡ Anime Face & Character Analyzer</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-title">Upload any anime character to detect their identity, powers, archetype, and stats.</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-title">⚡ AnimeVision AI</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-title">Upload any anime character image to detect identity, powers, archetype, and stats.</div>', unsafe_allow_html=True)
 
 # ----------------------------------------------------
 # 5. Main Layout
@@ -139,13 +123,15 @@ col_upload, col_result = st.columns([1, 1], gap="large")
 
 with col_upload:
     st.markdown("### 📤 Upload Character")
-    uploaded_file = st.file_uploader("Choose an anime image (PNG, JPG, JPEG)", type=["png", "jpg", "jpeg"])
+    uploaded_file = st.file_uploader(
+        "Choose an anime image (PNG, JPG, JPEG, JFIF, WEBP)", 
+        type=["png", "jpg", "jpeg", "jfif", "webp", "bmp"]
+    )
     
     if uploaded_file is not None:
-        image = Image.open(uploaded_file)
+        raw_image = Image.open(uploaded_file)
+        image = raw_image.convert("RGB")
         st.image(image, caption="Target Character", use_container_width=True)
-        
-        # Analyze Button
         analyze_btn = st.button("🚀 Analyze Character", type="primary", use_container_width=True)
     else:
         st.info("💡 Upload an image above to start the analysis.")
@@ -160,11 +146,9 @@ with col_result:
         else:
             with st.spinner("🔍 Scanning character traits, powers, and lore..."):
                 try:
-                    # Initialize Gemini Client with secure key
                     client = genai.Client(api_key=api_key)
                     
-                    # Structured Prompt
-                    prompt = f"""
+                    prompt = """
                     You are an expert anime character identifier and lore specialist.
                     Analyze this anime character image and provide the output formatted strictly with the following sections:
 
@@ -185,17 +169,21 @@ with col_result:
                     * **Estimated Anime Lookalikes:** [List 2-3 characters with similar facial designs]
                     """
 
-                    # Call the model
                     response = client.models.generate_content(
-                        model="gemini-2.5-flash",
+                        model="gemini-3.6-flash",
                         contents=[image, prompt]
                     )
                     
-                    # Trigger visual celebration
                     if enable_fx:
                         st.balloons()
+                    
+                    if enable_sound:
+                        st.audio(
+                            "https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3",
+                            format="audio/mp3",
+                            autoplay=True
+                        )
 
-                    # Display Tabs for clean layout
                     tab1, tab2 = st.tabs(["📜 Character Dossier", "📈 Power & Stats"])
                     
                     with tab1:
